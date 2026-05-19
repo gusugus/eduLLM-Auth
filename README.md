@@ -132,4 +132,4 @@ Las contraseñas se validan con **BCrypt**.
 - El token JWT expira en **24 horas** por defecto.
 - Logs en `logs/auth.log` (rotación: 10MB, 30 días).
 
-
+- Cambio sni problema
