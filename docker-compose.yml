@@ -1,0 +1,11 @@
+services:
+  autenticacion-web:
+    build: .
+    container_name: auth-ms
+    network_mode: host
+    mem_limit: 512m
+    volumes:
+      - ./config/application.yml:/app/config/application.yml
+      - ./logs:/app/logs
+    restart: unless-stopped
+    
