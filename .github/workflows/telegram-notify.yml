@@ -1,4 +1,4 @@
--name: Notificaciones de Telegram para Pull Requests
+name: Notificaciones de Telegram para Pull Requests
 
 # Eventos que activan el workflow. Escuchamos dos tipos de PR.
 on:
