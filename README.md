@@ -131,3 +131,4 @@ Las contraseñas se validan con **BCrypt**.
 - ⚠️ Credenciales y secret JWT hardcodeados en `application.yml` → usar variables de entorno en producción.
 - El token JWT expira en **24 horas** por defecto.
 - Logs en `logs/auth.log` (rotación: 10MB, 30 días).
+
