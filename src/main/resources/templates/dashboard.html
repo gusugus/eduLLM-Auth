@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - EduLLM</title>
+    <style>
+        body { font-family: Arial; padding: 2rem; }
+        .container { max-width: 600px; margin: auto; }
+        button { padding: 8px 16px; margin-top: 1rem; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Bienvenido al Dashboard</h2>
+    <p>Has iniciado sesión correctamente.</p>
+    <h3>Token JWT (guardado en localStorage):</h3>
+    <pre id="tokenDisplay"></pre>
+    <button id="logoutBtn">Cerrar sesión</button>
+</div>
+
+<script>
+    const token = localStorage.getItem('jwtToken');
+    if (!token) {
+        window.location.href = '/login';
+    }
+    document.getElementById('tokenDisplay').innerText = token;
+
+    document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('jwtToken');
+        window.location.href = '/login';
+    });
+</script>
+</body>
+</html>

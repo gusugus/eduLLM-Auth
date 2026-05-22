@@ -42,6 +42,26 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         String username = null;
         String jwt = null;
 
+        
+        String requestURI = request.getRequestURI();
+
+        // Lista de rutas que no requieren autenticación
+        boolean isPublicRoute = requestURI.equals("/api/auth/login")
+                || requestURI.equals("/api/auth/forgot-password")
+                || requestURI.equals("/api/auth/reset-password")
+                || requestURI.startsWith("/login")
+                || requestURI.startsWith("/forgot-password")
+                || requestURI.startsWith("/reset-password")
+                || requestURI.equals("/dashboard")
+                || requestURI.startsWith("/css/")
+                || requestURI.startsWith("/js/");
+
+        if (isPublicRoute) {
+            chain.doFilter(request, response);
+            return;
+        }
+        
+        
         // Extraer el token del header "Authorization: Bearer <token>"
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             jwt = authorizationHeader.substring(7);
@@ -70,6 +90,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
         }
+        
         // Continuar con la cadena de filtros
         chain.doFilter(request, response);
     }

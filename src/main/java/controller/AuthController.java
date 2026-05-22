@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import autenticacionWeb.JwtUtil;
 import dto.AuthenticationRequest;
 import dto.AuthenticationResponse;
+import dto.ForgotPasswordRequest;
+import dto.ResetPasswordRequest;
+import services.PasswordResetService;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,6 +24,9 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+    
+    @Autowired
+    private PasswordResetService passwordResetService;
 
     @GetMapping("/test")
     public String test() { return "OK"; }
@@ -44,4 +50,27 @@ public class AuthController {
         // 4. Devolver respuesta
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
+    
+    
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        // Se procesa la solicitud. Por seguridad, siempre se devuelve el mismo mensaje.
+        passwordResetService.createPasswordResetToken(request.getUsername());
+        return ResponseEntity.ok("Si el usuario existe, recibirás un correo con las instrucciones.");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        System.out.println("=== Llegó al reset-password ===");
+        System.out.println("Token: " + request.getToken());
+        System.out.println("New password: " + request.getNewPassword());
+        boolean isReset = passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+        if (isReset) {
+            return ResponseEntity.ok("Contraseña restablecida exitosamente.");
+        } else {
+            return ResponseEntity.badRequest().body("Token inválido o expirado.");
+        }
+    }
+    
+    
 }

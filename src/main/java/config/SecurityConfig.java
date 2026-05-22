@@ -25,18 +25,19 @@ public class SecurityConfig {
     @Autowired
     private UserDetailsService userDetailsService;
 
-
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .httpBasic().disable()  // ← DESHABILITA BASIC AUTH
+            .csrf(csrf -> csrf.disable())  // solo si es stateless con JWT
             .authorizeHttpRequests(authz -> authz
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/login", "/forgot-password", "/reset-password", "/dashboard",
+                                 "/api/auth/login", "/api/auth/forgot-password", "/api/auth/reset-password",
+                                 "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()
             )
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+            .formLogin(form -> form.disable())
+            .httpBasic(basic -> basic.disable());
+        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
     
