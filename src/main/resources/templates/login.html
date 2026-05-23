@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión - EduLLM</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            text-align: center;
+            color: #1a73e8;
+            margin-bottom: 1.5rem;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0d5bbd;
+        }
+        .message {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        .error {
+            color: #d32f2f;
+        }
+        .success {
+            color: #2e7d32;
+        }
+        .links {
+            margin-top: 1rem;
+            text-align: center;
+        }
+        .links a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h2>EduLLM - Acceso</h2>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Usuario" required autofocus>
+        <input type="password" id="password" placeholder="Contraseña" required>
+        <button type="submit">Ingresar</button>
+    </form>
+    <div id="message" class="message"></div>
+    <div class="links">
+        <a href="/forgot-password">¿Olvidaste tu contraseña?</a>
+    </div>
+</div>
+
+<script>
+	const loginForm = document.getElementById('loginForm');
+	const messageDiv = document.getElementById('message');
+
+	loginForm.addEventListener('submit', async (e) => {
+	    e.preventDefault();
+	    const username = document.getElementById('username').value.trim();
+	    const password = document.getElementById('password').value;
+
+	    messageDiv.innerHTML = '';
+	    messageDiv.classList.remove('error', 'success');
+
+	    try {
+	        const response = await fetch('/api/auth/login', {
+	            method: 'POST',
+	            headers: { 'Content-Type': 'application/json' },
+	            body: JSON.stringify({ username, password })
+	        });
+
+	        // Leer el cuerpo de la respuesta (siempre es JSON, tanto en éxito como en error)
+	        const data = await response.json();
+
+	        if (response.ok) {
+	            // Éxito: guardar token y redirigir
+	            localStorage.setItem('jwtToken', data.token);
+	            messageDiv.innerHTML = '✅ Login exitoso. Redirigiendo...';
+	            messageDiv.classList.add('success');
+	            setTimeout(() => {
+	                window.location.href = '/dashboard';
+	            }, 1500);
+	        } else {
+	            // Error: mostrar el mensaje del backend o uno genérico
+	            const errorMsg = data.message || 'Credenciales inválidas';
+	            messageDiv.innerHTML = errorMsg;
+	            messageDiv.classList.add('error');
+	        }
+	    } catch (error) {
+	        console.error('Fetch error:', error);
+	        messageDiv.innerHTML = 'Error de conexión con el servidor';
+	        messageDiv.classList.add('error');
+	    }
+	});
+</script>
+</body>
+</html>

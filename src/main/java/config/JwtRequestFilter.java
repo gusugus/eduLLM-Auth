@@ -13,15 +13,15 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import autenticacionWeb.JwtUtil;
-// ✅ CAMBIO IMPORTANTE: usar jakarta.servlet en lugar de javax.servlet
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
+import lombok.extern.slf4j.Slf4j;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 
+@Slf4j
 @Component
 public class JwtRequestFilter extends OncePerRequestFilter {
 
@@ -32,52 +32,64 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, 
-                                    HttpServletResponse response, 
-                                    FilterChain chain)
-            throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                HttpServletResponse response,
+                                FilterChain chain)
+        throws ServletException, IOException {
+    final String authorizationHeader = request.getHeader("Authorization");
 
-        final String authorizationHeader = request.getHeader("Authorization");
+    String username = null;
+    String jwt = null;
 
-        String username = null;
-        String jwt = null;
-
-        // Extraer el token del header "Authorization: Bearer <token>"
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            jwt = authorizationHeader.substring(7);
-            try {
-                username = jwtUtil.extractUsername(jwt);
-            } catch (ExpiredJwtException e) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
-                return; // Detener la ejecución
-            } catch (MalformedJwtException e) {
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
-                return;
-            }
-        } else {
-            // No usar logger directamente; si quieres log, inyecta un Logger (por ejemplo, Lombok @Slf4j)
-            System.out.println("El token JWT no comienza con el prefijo Bearer");
+    if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        jwt = authorizationHeader.substring(7);
+        try {
+            username = jwtUtil.extractUsername(jwt);
+        } catch (ExpiredJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token expirado");
+            return;
+        } catch (MalformedJwtException e) {
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+            return;
         }
-
-        // Validar el token y configurar la autenticación en Spring Security
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
-            if (jwtUtil.validateToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-            }
+    } else {
+        // No es error en rutas públicas porque ya fueron excluidas
+        if (log.isDebugEnabled()) {
+            log.debug("Petición a ruta protegida sin token: {}", request.getRequestURI());
         }
-        // Continuar con la cadena de filtros
-        chain.doFilter(request, response);
+        response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token requerido");
+        return;
     }
+
+    if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+        if (jwtUtil.validateToken(jwt, userDetails)) {
+            UsernamePasswordAuthenticationToken authToken =
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+        }
+    }
+    if (request.getMethod().equals("OPTIONS")) {
+        chain.doFilter(request, response);
+        return;
+    }
+    
+    chain.doFilter(request, response);
+}
     
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        return path.startsWith("/api/auth/");
+        boolean exclude = path.startsWith("/api/auth/") 
+            || path.equals("/login") 
+            || path.equals("/forgot-password") 
+            || path.equals("/reset-password")
+            || path.equals("/dashboard")   // <-- añade esta línea
+            || path.startsWith("/css/") 
+            || path.startsWith("/js/");
+        log.info("shouldNotFilter: " + path + " -> exclude=" + exclude);
+        return exclude;
     }
     
     
