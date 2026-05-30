@@ -92,47 +92,45 @@
 </div>
 
 <script>
-	const loginForm = document.getElementById('loginForm');
-	const messageDiv = document.getElementById('message');
+    const loginForm = document.getElementById('loginForm');
+    const messageDiv = document.getElementById('message');
 
-	loginForm.addEventListener('submit', async (e) => {
-	    e.preventDefault();
-	    const username = document.getElementById('username').value.trim();
-	    const password = document.getElementById('password').value;
+    loginForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
 
-	    messageDiv.innerHTML = '';
-	    messageDiv.classList.remove('error', 'success');
+        messageDiv.innerHTML = '';
+        messageDiv.classList.remove('error', 'success');
 
-	    try {
-	        const response = await fetch('/api/auth/login', {
-	            method: 'POST',
-	            headers: { 'Content-Type': 'application/json' },
-	            body: JSON.stringify({ username, password })
-	        });
+        try {
+            const response = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
 
-	        // Leer el cuerpo de la respuesta (siempre es JSON, tanto en éxito como en error)
-	        const data = await response.json();
+            const data = await response.json();
 
-	        if (response.ok) {
-	            // Éxito: guardar token y redirigir
-	            localStorage.setItem('jwtToken', data.token);
-	            messageDiv.innerHTML = '✅ Login exitoso. Redirigiendo...';
-	            messageDiv.classList.add('success');
-	            setTimeout(() => {
-	                window.location.href = '/dashboard';
-	            }, 1500);
-	        } else {
-	            // Error: mostrar el mensaje del backend o uno genérico
-	            const errorMsg = data.message || 'Credenciales inválidas';
-	            messageDiv.innerHTML = errorMsg;
-	            messageDiv.classList.add('error');
-	        }
-	    } catch (error) {
-	        console.error('Fetch error:', error);
-	        messageDiv.innerHTML = 'Error de conexión con el servidor';
-	        messageDiv.classList.add('error');
-	    }
-	});
+            if (response.ok) {
+                // ✅ Redirigir a la URL que devuelve el backend (que apunta al gateway)
+                messageDiv.innerHTML = '✅ Login exitoso. Redirigiendo...';
+                messageDiv.classList.add('success');
+                
+                setTimeout(() => {
+                    window.location.href = data.redirectUrl;
+                }, 5500);
+            } else {
+                const errorMsg = data.error || data.message || 'Credenciales inválidas';
+                messageDiv.innerHTML = errorMsg;
+                messageDiv.classList.add('error');
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            messageDiv.innerHTML = 'Error de conexión con el servidor';
+            messageDiv.classList.add('error');
+        }
+    });
 </script>
 </body>
 </html>

@@ -31,9 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-    
-    @Autowired
     private UserDetailsService userDetailsService;
 
     @Autowired
@@ -49,7 +46,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/login", "/forgot-password", "/reset-password", "/dashboard",
                                  "/api/auth/login", "/api/auth/forgot-password", "/api/auth/reset-password",
-                                 "/css/**", "/js/**").permitAll()
+                                 "/css/**", "/api/auth/verify",  "/js/**").permitAll()
                 .anyRequest().authenticated()	
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))

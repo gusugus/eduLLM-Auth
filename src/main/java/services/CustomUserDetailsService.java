@@ -28,10 +28,19 @@ public class CustomUserDetailsService implements UserDetailsService {
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
         log.debug("Usuario cargado desde BD: {}", usuario.getUsername());
-        return User.builder()
-        	    .username(usuario.getUsername())
-        	    .password(usuario.getPasswordHash())
-        	    .authorities(Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getIdRol())))
-        	    .build();
+        
+        // Construir autoridades (rol)
+        SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + usuario.getNombreRol().toUpperCase());
+        // El rol como string (sin prefijo "ROLE_") lo puedes guardar aparte
+        String rolStr = "ROLE_" + usuario.getNombreRol().toUpperCase();
+
+        return new CustomUserDetails(
+            usuario.getIdUsuario(),      // asumiendo que UsuarioLogin tiene getIdUsuario()
+            usuario.getUsername(),
+            usuario.getPasswordHash(),
+            Collections.singletonList(authority),
+            rolStr
+        );
+        
     }
 }

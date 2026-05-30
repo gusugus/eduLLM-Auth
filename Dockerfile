@@ -5,7 +5,9 @@ WORKDIR /app
 COPY ./target/autenticacionWeb-0.0.1-SNAPSHOT.jar app.jar
 
 # Descargar el agente OpenTelemetry (o copiarlo)
-ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+#ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+
+COPY ./opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
 
 # Variables de entorno por defecto (pueden sobrescribirse en el compose)
 ENV OTEL_RESOURCE_ATTRIBUTES="service.name=ms-login,service.namespace=eduLLM,service.version=0.0.1-SNAPSHOT,app.artifact=autenticacionWeb"
