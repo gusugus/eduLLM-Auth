@@ -27,7 +27,7 @@ public class CustomUserDetailsService implements UserDetailsService {
             log.warn("Intento de login con usuario inexistente: {}", username);
             throw new UsernameNotFoundException("Usuario no encontrado: " + username);
         }
-        log.warn("Login correcto: {} con idRol", usuario.getUsername(), usuario.getIdRol());
+        log.debug("Usuario cargado desde BD: {}", usuario.getUsername());
         return User.builder()
         	    .username(usuario.getUsername())
         	    .password(usuario.getPasswordHash())

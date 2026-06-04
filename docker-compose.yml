@@ -2,10 +2,27 @@ services:
   autenticacion-web:
     build: .
     container_name: auth-ms
-    network_mode: host
     mem_limit: 512m
+    ports:
+      - "8082:8080"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      # OpenTelemetry
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=ms-login,service.namespace=eduLLM,service.version=0.0.1-SNAPSHOT,app.artifact=autenticacionWeb
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://alloy:4318
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      - OTEL_SERVICE_NAME=ms-login
     volumes:
-      - ./config/application.yml:/app/config/application.yml
+      - ./config/application.yml:/app/config/application.yml  # opcional si prefieres archivo
       - ./logs:/app/logs
+    networks:
+      - default          # para comunicarse con qdrant
+      - observability-net # para enviar trazas a Alloy
     restart: unless-stopped
-    
+
+
+networks:
+  observability-net:
+    external: true   
