@@ -24,6 +24,7 @@ public class UsuarioRepository {
                 u.setUsername(username);   // <-- Asignar el username pasado
                 u.setPasswordHash(rs.getString("password_hash"));
                 u.setIdRol(rs.getInt("id_rol"));
+                u.setNombreRol(rs.getString("nombre_rol"));
                 u.setPrimerNombre(rs.getString("primer_nombre"));
                 u.setApellidoPaterno(rs.getString("apellido_paterno"));
                 u.setApellidoMaterno(rs.getString("apellido_materno"));
