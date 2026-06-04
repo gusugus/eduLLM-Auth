@@ -5,10 +5,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class PasswordResetService {
 
@@ -20,7 +24,7 @@ public class PasswordResetService {
     
     @Value("${app.reset-token-expiration-minutes:10}")
     private int expirationMinutes;
-
+    
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     // Genera un token, lo guarda en la BD y envía el correo
@@ -45,11 +49,13 @@ public class PasswordResetService {
             // Nota: Para enviar el correo, necesitamos el email del usuario.
             // Asumimos que el username ES el email. Ajusta el query si tienes un campo email separado.
             emailService.sendPasswordResetEmail(correo, dbUsername, token);
+            
+            log.info("Correo de reset enviado a: {}", correo);
 
         } catch (Exception e) {
             // Por seguridad, no lanzamos una excepción específica. Simplemente registramos el error internamente.
-            System.err.println("Error en el proceso de reset para el usuario: " + username+e.toString());
-        }
+            log.error("Error en proceso de reset para usuario: {}", username, e);
+            }
     }
 
     // Valida el token y actualiza la contraseña
@@ -71,8 +77,16 @@ public class PasswordResetService {
             String sqlUpdatePassword = "UPDATE comun.admin_usuario SET password_hash = ?, reset_token = NULL, reset_token_expiry = NULL WHERE reset_token = ?";
             int updated = jdbcTemplate.update(sqlUpdatePassword, encodedPassword, token);
 
-            return updated > 0;
+            if (updated > 0) {
+                log.info("Contraseña restablecida exitosamente para usuario: {}", username);
+                return true;
+            } else {
+                log.warn("No se actualizó ningún registro para token: {}", token);
+                return false;
+            }
+            
         } catch (Exception e) {
+        	log.info("Error en reset password:", e);
             return false; // Token inválido o error
         }
     }

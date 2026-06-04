@@ -13,8 +13,10 @@ import dto.AuthenticationRequest;
 import dto.AuthenticationResponse;
 import dto.ForgotPasswordRequest;
 import dto.ResetPasswordRequest;
+import lombok.extern.slf4j.Slf4j;
 import services.PasswordResetService;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -33,10 +35,11 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody AuthenticationRequest authenticationRequest) {
+    	String username = authenticationRequest.getUsername();
         // 1. Autenticar y obtener el objeto Authentication
         Authentication authentication = authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
-                authenticationRequest.getUsername(), 
+                username, 
                 authenticationRequest.getPassword()
             )
         );
@@ -46,7 +49,7 @@ public class AuthController {
 
         // 3. Generar el token
         final String jwt = jwtUtil.generateToken(userDetails);
-
+        log.info("Se creo el token al user {}", username);
         // 4. Devolver respuesta
         return ResponseEntity.ok(new AuthenticationResponse(jwt));
     }
@@ -61,9 +64,7 @@ public class AuthController {
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
-        System.out.println("=== Llegó al reset-password ===");
-        System.out.println("Token: " + request.getToken());
-        System.out.println("New password: " + request.getNewPassword());
+        
         boolean isReset = passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
         if (isReset) {
             return ResponseEntity.ok("Contraseña restablecida exitosamente.");
