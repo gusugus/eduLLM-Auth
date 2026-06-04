@@ -10,11 +10,12 @@ Este documento detalla la infraestructura de seguridad del microservicio, incluy
 
 El microservicio utiliza una arquitectura de seguridad completamente **stateless** (sin estado) administrada por Spring Security.
 
-* **CSRF (Cross-Site Request Forgery):** Deshabilitado, debido a que el servicio no utiliza cookies de sesión y confía únicamente en tokens JWT enviados en las cabeceras.
+* **CSRF (Cross-Site Request Forgery):** Deshabilitado (pendiente de habilitar con coordinación entre Gateway y frontends).
+* **Rate Limiting:** Los endpoints `/api/auth/login`, `/api/auth/forgot-password` y `/api/auth/reset-password` están protegidos con un límite de **10 peticiones por minuto por IP** mediante `RateLimitingFilter`.
 * **Política de Sesión:** `SessionCreationPolicy.STATELESS` (el servidor no mantiene registros de sesión en memoria).
 * **Endpoints Públicos (Excluidos de Autenticación):**
   - `/api/auth/login`, `/api/auth/forgot-password`, `/api/auth/reset-password` (REST APIs)
-  - `/login`, `/forgot-password`, `/reset-password`, `/dashboard` (Vistas Thymeleaf)
+  - `/login`, `/forgot-password`, `/reset-password` (Vistas Thymeleaf)
   - `/css/**`, `/js/**` (Recursos estáticos)
 * **Endpoints Protegidos:** Cualquier ruta no listada arriba requiere un token JWT válido.
 
@@ -29,6 +30,9 @@ Cada petición que requiere autenticación pasa a través de la cadena de filtro
    │
    ▼
 [SimpleCorsFilter] (Añade cabeceras CORS)
+   │
+   ▼
+[RateLimitingFilter] (10 req/min por IP en /api/auth/login, forgot, reset)
    │
    ▼
 [JwtRequestFilter] 
@@ -71,7 +75,8 @@ Las contraseñas de los usuarios nunca se guardan en texto plano. Se utiliza el 
 | Riesgo / Vulnerabilidad | Impacto | Estado | Mitigación |
 |---|---|---|---|
 | **Secretos Hardcodeados** | Alto. Si el código se expone públicamente, la clave de firma JWT y las claves de acceso SMTP / Base de datos quedan expuestas. | ⚠️ Pendiente | Cambiar `application.yml` para leer los secretos desde variables de entorno de producción (ej: `${JWT_SECRET}`). |
-| **CORS muy permisivo (`*`)** | Medio. Permite peticiones desde cualquier origen del navegador. | ⚠️ Pendiente | Restringir `Access-Control-Allow-Origin` a los dominios específicos de la aplicación EduLLM. |
+| **CORS muy permisivo (`*`)** | Medio. Permite peticiones desde cualquier origen del navegador. | ✅ Corregido | Restringido a orígenes conocidos: Gateway (`localhost:8085`, `8089`, `8080`, `gateway-ms`) y frontends (`localhost:8001`, `8002`, `8003`). |
+| **Ausencia de Rate Limiting** | Medio. Los endpoints de login y recuperación de contraseña están expuestos a ataques de fuerza bruta. | ✅ Corregido | Implementado `RateLimitingFilter` con límite de 10 peticiones por minuto por IP. |
 | **Exposición del Token en localStorage** | Bajo/Medio. La vista web guarda el token en `localStorage`, que es vulnerable a ataques XSS si se inyecta JS de terceros. | ℹ️ Informativo | Utilizar mecanismos de protección de contenido (CSP) en las páginas web y asegurar cookies HttpOnly para mayor seguridad si el cliente lo permite. |
 
 ---
@@ -81,8 +86,8 @@ Las contraseñas de los usuarios nunca se guardan en texto plano. Se utiliza el 
 ---
 
 ## Última revisión
-- **Fecha:** 2026-05-25
-- **Commit:** `c646311c83eae3bf4759c7ea39bfde2726ff11c9`
+- **Fecha:** 2026-06-03
+- **Commit:** `89f14705045fcfa7ce6647831cb31eaa78a804e3`
 
 ---
 

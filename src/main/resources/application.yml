@@ -42,15 +42,13 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 logging:
   level:
-    org.springframework.security: DEBUG
-    org.springframework.web: DEBUG
-    org.springframework.jdbc.core: DEBUG
-    org.springframework.jdbc.core.StatementCreatorUtils: TRACE
-    org.springframework.transaction: DEBUG
-    com.zaxxer.hikari: DEBUG
-    config: DEBUG
-    controller: DEBUG
-    services: DEBUG
+    org.springframework.security: INFO
+    org.springframework.web: INFO
+    org.springframework.jdbc.core: INFO
+    org.springframework.transaction: INFO
+    config: INFO
+    controller: INFO
+    services: INFO
 management:
   tracing:
     sampling:

@@ -6,6 +6,18 @@ Este documento registra cronológicamente todos los cambios significativos, nuev
 
 ---
 
+## [0.0.2-SNAPSHOT] - 2026-06-02
+
+### Corregido
+* **XSS en vistas Thymeleaf:** Reemplazados todos los `innerHTML` por `textContent` en `login.html`, `forgot-password.html` y `reset-password.html` para mitigar ataques de Cross-Site Scripting reflejado.
+* **CORS permisivo (`*`):** Restringido `Access-Control-Allow-Origin` a orígenes conocidos (Gateway y frontends) en `SimpleCorsFilter.java` y `SecurityConfig.java`.
+* **Logging excesivo:** Reducido de DEBUG/TRACE a INFO en `application.yml`.
+
+### Añadido
+* **Rate Limiting:** Nuevo `RateLimitingFilter` que limita a 10 peticiones por minuto por IP en los endpoints `/api/auth/login`, `/api/auth/forgot-password` y `/api/auth/reset-password`.
+
+---
+
 ## [0.0.1-SNAPSHOT] - 2026-05-25
 
 ### Añadido
@@ -31,8 +43,8 @@ Este documento registra cronológicamente todos los cambios significativos, nuev
 ---
 
 ## Última revisión
-- **Fecha:** 2026-05-25
-- **Commit:** `c646311c83eae3bf4759c7ea39bfde2726ff11c9`
+- **Fecha:** 2026-06-03
+- **Commit:** `89f14705045fcfa7ce6647831cb31eaa78a804e3`
 
 ---
 

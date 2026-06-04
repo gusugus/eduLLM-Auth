@@ -93,20 +93,6 @@ public class AuthController {
         }
     }
     
-    @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletResponse response) {
-        // Limpiar la cookie
-        ResponseCookie cookie = ResponseCookie.from("jwtToken", "")
-            .httpOnly(true)
-            .path("/")
-            .maxAge(0)  // Expira inmediatamente
-            .sameSite("Lax")
-            .build();
-        
-        response.addHeader("Set-Cookie", cookie.toString());
-        log.info("Logout exitoso");
-        return ResponseEntity.ok(Map.of("message", "Logout exitoso"));
-    }
     
     @GetMapping("/verify")
     public ResponseEntity<?> verify(Authentication authentication) {
@@ -134,4 +120,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Token inválido o expirado.");
         }
     }
+    
+    
 }

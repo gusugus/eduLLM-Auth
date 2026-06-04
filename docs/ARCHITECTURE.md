@@ -12,7 +12,7 @@ El microservicio está estructurado bajo el patrón de arquitectura por capas cl
 
 ```mermaid
 graph TD
-    Client[Cliente / Navegador] -->|HTTP Request| SecurityFilter[Filtros de Seguridad: CorsFilter, JwtRequestFilter]
+    Client[Cliente / Navegador] -->|HTTP Request| SecurityFilter[Filtros de Seguridad: CorsFilter, RateLimitingFilter, JwtRequestFilter]
     SecurityFilter -->|Rutas Protegidas / Públicas| AuthController[AuthController / ViewController]
     AuthController -->|Lógica de Autenticación| CustomUserDetailsService[CustomUserDetailsService]
     AuthController -->|Lógica de Recuperación| PasswordResetService[PasswordResetService]
@@ -34,7 +34,7 @@ La aplicación Java se divide en los siguientes paquetes bajo la raíz `src/main
 |---|---|---|
 | `main` | Entry point para la inicialización de la aplicación Spring Boot. | `Application.java` |
 | `controller` | Controladores REST y MVC de Thymeleaf que exponen las rutas HTTP. | `AuthController.java`, `ViewController.java` |
-| `config` | Filtros y reglas de seguridad de Spring Security, y manejo de CORS. | `SecurityConfig.java`, `JwtRequestFilter.java`, `SimpleCorsFilter.java`, `CustomAuthenticationEntryPoint.java` |
+| `config` | Filtros y reglas de seguridad de Spring Security, manejo de CORS y rate limiting. | `SecurityConfig.java`, `JwtRequestFilter.java`, `SimpleCorsFilter.java`, `RateLimitingFilter.java`, `CustomAuthenticationEntryPoint.java` |
 | `services` | Implementa la lógica de negocio (carga de usuarios, generación de tokens de restablecimiento y envío de correos). | `CustomUserDetailsService.java`, `PasswordResetService.java`, `EmailServiceImpl.java` |
 | `repositorio` | Acceso directo a base de datos PostgreSQL utilizando Spring JDBC. | `UsuarioRepository.java` |
 | `autenticacionWeb` | Clases de utilidad para el ciclo de vida de los JSON Web Tokens (JWT). | `JwtUtil.java` |
@@ -121,8 +121,8 @@ Ejecución del cambio de contraseña consumiendo el token temporal de recuperaci
 ---
 
 ## Última revisión
-- **Fecha:** 2026-05-25
-- **Commit:** `c646311c83eae3bf4759c7ea39bfde2726ff11c9`
+- **Fecha:** 2026-06-03
+- **Commit:** `89f14705045fcfa7ce6647831cb31eaa78a804e3`
 
 ---
 

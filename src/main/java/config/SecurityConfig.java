@@ -1,5 +1,6 @@
 package config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,9 +84,14 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(false);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.setAllowedOrigins(Arrays.asList(
+            "http://localhost:8085", "http://localhost:8080",
+            "http://localhost:8089", "http://localhost:8001",
+            "http://localhost:8002", "http://localhost:8003",
+            "http://gateway-ms"
+        ));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedMethods(Arrays.asList("*"));
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
@@ -93,7 +99,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:8085", "http://localhost:8080",
+            "http://localhost:8089", "http://localhost:8001",
+            "http://localhost:8002", "http://localhost:8003",
+            "http://gateway-ms"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(false);

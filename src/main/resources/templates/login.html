@@ -100,7 +100,7 @@
         const username = document.getElementById('username').value.trim();
         const password = document.getElementById('password').value;
 
-        messageDiv.innerHTML = '';
+        messageDiv.textContent = '';
         messageDiv.classList.remove('error', 'success');
 
         try {
@@ -113,8 +113,7 @@
             const data = await response.json();
 
             if (response.ok) {
-                // ✅ Redirigir a la URL que devuelve el backend (que apunta al gateway)
-                messageDiv.innerHTML = '✅ Login exitoso. Redirigiendo...';
+                messageDiv.textContent = 'Login exitoso. Redirigiendo...';
                 messageDiv.classList.add('success');
                 
                 setTimeout(() => {
@@ -122,12 +121,12 @@
                 }, 5500);
             } else {
                 const errorMsg = data.error || data.message || 'Credenciales inválidas';
-                messageDiv.innerHTML = errorMsg;
+                messageDiv.textContent = errorMsg;
                 messageDiv.classList.add('error');
             }
         } catch (error) {
             console.error('Fetch error:', error);
-            messageDiv.innerHTML = 'Error de conexión con el servidor';
+            messageDiv.textContent = 'Error de conexión con el servidor';
             messageDiv.classList.add('error');
         }
     });
