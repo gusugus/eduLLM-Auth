@@ -25,8 +25,4 @@ public class ViewController {
         return modelAndView;
     }
     
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "dashboard";
-    }
 }

@@ -1,5 +1,6 @@
 package config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +32,6 @@ import lombok.extern.slf4j.Slf4j;
 public class SecurityConfig {
 
     @Autowired
-    private JwtRequestFilter jwtRequestFilter;
-    
-    @Autowired
     private UserDetailsService userDetailsService;
 
     @Autowired
@@ -49,7 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/login", "/forgot-password", "/reset-password", "/dashboard",
                                  "/api/auth/login", "/api/auth/forgot-password", "/api/auth/reset-password",
-                                 "/css/**", "/js/**").permitAll()
+                                 "/css/**", "/api/auth/verify",  "/js/**").permitAll()
                 .anyRequest().authenticated()	
             )
             .exceptionHandling(ex -> ex.authenticationEntryPoint(authenticationEntryPoint))
@@ -86,9 +84,14 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(false);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.setAllowedOrigins(Arrays.asList(
+            "http://localhost:8085", "http://localhost:8080",
+            "http://localhost:8089", "http://localhost:8001",
+            "http://localhost:8002", "http://localhost:8003",
+            "http://gateway-ms"
+        ));
+        config.setAllowedHeaders(Arrays.asList("*"));
+        config.setAllowedMethods(Arrays.asList("*"));
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
@@ -96,7 +99,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:8085", "http://localhost:8080",
+            "http://localhost:8089", "http://localhost:8001",
+            "http://localhost:8002", "http://localhost:8003",
+            "http://gateway-ms"
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(false);
