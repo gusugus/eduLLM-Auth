@@ -17,16 +17,16 @@ spring:
     csrf:
       enabled: false
   mail:
-    host: smtp.gmail.com
-    port: 587
-    username: gang.emelec@gmail.com
-    password: ozuagiyto888ua1111
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
+      host: smtp.gmail.com
+      port: 587
+      username: gang.emelec@gmail.com
+      password: abc 
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
   datasource:
     url: jdbc:postgresql://host.docker.internal:5432/edullm
     username: admin
