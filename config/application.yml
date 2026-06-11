@@ -1,10 +1,8 @@
 jwt:
-  # Clave secreta (debe tener al menos 256 bits / 32 caracteres)
-  # En producción, usa una variable de entorno o un secreto de Vault
   secret: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
-  expiration: 86400000 # 24 horas en milisegundos
+  expiration: 86400000
 app:
-  reset-token-expiration-minutes: 10 
+  reset-token-expiration-minutes: 10
   base-url: localhost
   protocol: http:///
   port: 8081
@@ -19,18 +17,18 @@ spring:
     csrf:
       enabled: false
   mail:
-      host: smtp.gmail.com
-      port: 587
-      username: gang.emelec@gmail.com
-      password: ozuagiytouaywscf 
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
+    host: smtp.gmail.com
+    port: 587
+    username: gang.emelec@gmail.com
+    password: ozuagiyto888ua1111
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
-    url: jdbc:postgresql://host.docker.internal:5432/edu_llm
+    url: jdbc:postgresql://host.docker.internal:5432/edullm
     username: admin
     password: admin
     driver-class-name: org.postgresql.Driver

@@ -81,12 +81,14 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
         String path = request.getRequestURI();
-        boolean exclude = path.startsWith("/api/auth/") 
-            || path.equals("/login") 
-            || path.equals("/forgot-password") 
+        boolean exclude = path.equals("/")
+            || path.equals("/inicio")
+            || path.startsWith("/api/auth/")
+            || path.equals("/login")
+            || path.equals("/forgot-password")
             || path.equals("/reset-password")
-            || path.equals("/dashboard")   // <-- añade esta línea
-            || path.startsWith("/css/") 
+            || path.equals("/dashboard")
+            || path.startsWith("/css/")
             || path.startsWith("/js/");
         log.info("shouldNotFilter: " + path + " -> exclude=" + exclude);
         return exclude;

@@ -1,38 +1,37 @@
 jwt:
-  # Clave secreta (debe tener al menos 256 bits / 32 caracteres)
   secret: "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970"
-  expiration: 86400000 # 24 horas en milisegundos
+  expiration: 86400000
 app:
-  reset-token-expiration-minutes: 10 
+  reset-token-expiration-minutes: 10
   base-url: localhost
-  protocol: http://
-  port: 8080
-  gateway-url: http://gateway-ms
+  protocol: http:///
+  port: 8081
+  gateway-url: http://localhost:8085
 spring:
+  http:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
   security:
     csrf:
       enabled: false
   mail:
-      host: smtp.gmail.com
-      port: 587
-      username: gang.emelec@gmail.com
-      password: ozuagiytouaywscf 
-      properties:
-        mail:
-          smtp:
-            auth: true
-            starttls:
-              enable: true
+    host: smtp.gmail.com
+    port: 587
+    username: gang.emelec@gmail.com
+    password: ozuagiyto888ua1111
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   datasource:
-    url: jdbc:postgresql://127.0.0.1:5432/edu_llm
+    url: jdbc:postgresql://host.docker.internal:5432/edullm
     username: admin
     password: admin
     driver-class-name: org.postgresql.Driver
-    hikari:
-      connection-timeout: 30000
-      initialization-fail-timeout: -1
-      maximum-pool-size: 5
-
   jpa:
     hibernate:
       ddl-auto: none
@@ -42,13 +41,8 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
 logging:
   level:
-    org.springframework.security: INFO
-    org.springframework.web: INFO
-    org.springframework.jdbc.core: INFO
-    org.springframework.transaction: INFO
-    config: INFO
-    controller: INFO
-    services: INFO
+    services: DEBUG
+    controller: DEBUG
 management:
   tracing:
     sampling:
