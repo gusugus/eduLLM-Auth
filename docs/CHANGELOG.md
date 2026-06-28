@@ -6,6 +6,28 @@ Este documento registra cronológicamente todos los cambios significativos, nuev
 
 ---
 
+## [0.0.3-SNAPSHOT] - 2026-06-25
+
+### Añadido
+* **Verificación de token al cargar página:** Nuevo endpoint `GET /api/auth/verify-reset-token` que valida si el reset token expiró, llamado desde `reset-password.js` al cargar la página.
+* **Email templates HTML externos:** Los correos ahora se envían en HTML desde `config/email-templates/`, legibles desde filesystem sin recompilar.
+* **Endpoint `POST /api/auth/recreate-credentials`:** Para uso externo (admin), genera nueva contraseña aleatoria, la hashea, crea reset token de 7 días, y envía credenciales por email.
+* **Validación de política de contraseña:** Backend valida: 6-10 caracteres, mayúscula, minúscula, dígito.
+* **Primer ingreso obligatorio:** Login detecta `reset_token` activo y responde `mustChangePassword: true` sin emitir JWT. Frontend redirige a `/reset-password`.
+* **Spinner en botones:** Los formularios `login`, `forgot-password` y `reset-password` muestran spinner y deshabilitan el botón al enviar.
+* **Ojito mostrar/ocultar contraseña:** Campos de contraseña en `login` y `reset-password` con toggle visual.
+* **Prevención de doble envío:** Botones deshabilitados durante la petición para evitar múltiples submits.
+
+### Corregido
+* **URL del enlace en correo:** `http:///localhost` → `http://localhost` (triple slash).
+* **Espacio faltante:** "expirará en10 minutos" → "expirará en 10 minutos".
+* **Nombre de tabla BD:** `comun.admin_usuario` → `comun.tbl_m_usuario` en código y documentación.
+* **Caracteres especiales en email templates:** Reemplazados escapes `\u00e1` por caracteres UTF-8 reales.
+* **`EmptyResultDataAccessException` en forgot-password:** Manejo graceful cuando el usuario no existe, devuelve 404 al frontend.
+* **`verify-reset-token` público:** Agregado a `SecurityConfig.permitAll` y rutas públicas del Gateway.
+
+---
+
 ## [0.0.2-SNAPSHOT] - 2026-06-02
 
 ### Corregido
@@ -27,7 +49,7 @@ Este documento registra cronológicamente todos los cambios significativos, nuev
 * **Persistencia:**
   - Repositorio `UsuarioRepository` con llamadas JDBC directas a la función de base de datos `comun.fn_login(?)`.
 * **Restablecimiento de Contraseñas:**
-  - Servicio `PasswordResetService` para la generación de tokens UUID temporales de 10 minutos y validación de los mismos en la tabla `comun.admin_usuario`.
+  - Servicio `PasswordResetService` para la generación de tokens UUID temporales de 10 minutos y validación de los mismos en la tabla `comun.tbl_m_usuario`.
   - Servicio de correos `EmailServiceImpl` interactuando con servidores SMTP de Gmail.
 * **Interfaz de Usuario (Thymeleaf):**
   - Vistas HTML para `/login`, `/forgot-password`, `/reset-password` y `/dashboard` integradas con peticiones fetch asíncronas y guardado en `localStorage`.
@@ -43,8 +65,7 @@ Este documento registra cronológicamente todos los cambios significativos, nuev
 ---
 
 ## Última revisión
-- **Fecha:** 2026-06-03
-- **Commit:** `89f14705045fcfa7ce6647831cb31eaa78a804e3`
+- **Fecha:** 2026-06-25
 
 ---
 

@@ -11,10 +11,10 @@ Todas las plantillas HTML se localizan en la ruta `src/main/resources/templates/
 ## 🗺️ Mapa de Rutas de Vistas
 
 | Ruta HTTP | Plantilla HTML | Controlador | Acceso | Descripción |
-|---|---|---|---|---|
-| `/login` | `login.html` | `ViewController.loginPage` | Público | Pantalla de inicio de sesión. |
+|---|---|---|---|---|---|
+| `/login` | `login.html` | `ViewController.loginPage` | Público | Pantalla de inicio de sesión. Si `mustChangePassword=true`, redirige a `/reset-password`. |
 | `/forgot-password` | `forgot-password.html` | `ViewController.showForgotPasswordForm` | Público | Formulario para solicitar recuperación de contraseña. |
-| `/reset-password` | `reset-password.html` | `ViewController.showResetPasswordForm` | Público | Formulario para ingresar la nueva contraseña. |
+| `/reset-password` | `reset-password.html` | `ViewController.showResetPasswordForm` | Público | Formulario para ingresar la nueva contraseña. Verifica token al cargar. |
 | `/dashboard` | `dashboard.html` | `ViewController.dashboard` | Semi-protegido (JS) | Panel de prueba que lee los claims del JWT. |
 
 ---
@@ -53,10 +53,13 @@ Todas las plantillas HTML se localizan en la ruta `src/main/resources/templates/
     <input type="hidden" id="token" th:value="${token}" />
     ```
 * **Flujo y Comportamiento JavaScript:**
-  1. Valida en el cliente que las contraseñas escritas coincidan (`newPassword === confirmPassword`).
-  2. Envía un `POST` JSON a `/api/auth/reset-password` con `{ token, newPassword }`.
-  3. **Éxito:** Muestra mensaje de éxito verde y redirige tras 2 segundos a `/login`.
-  4. **Fallo:** Muestra mensaje de error en rojo.
+  1. Al cargar la página, hace fetch a `GET /api/auth/verify-reset-token?token=<token>`.
+  2. Si el token es inválido o expiró, muestra mensaje de error y oculta el formulario.
+  3. Si es válido, muestra el formulario normalmente.
+  4. Al enviar, valida que las contraseñas coincidan (`newPassword === confirmPassword`).
+  5. Envía un `POST` JSON a `/api/auth/reset-password` con `{ token, newPassword }`.
+  6. **Éxito:** Muestra mensaje de éxito verde y redirige tras 2 segundos a `/login`.
+  7. **Fallo:** Muestra mensaje de error en rojo.
 
 ---
 
@@ -82,8 +85,7 @@ Todas las plantillas HTML se localizan en la ruta `src/main/resources/templates/
 ---
 
 ## Última revisión
-- **Fecha:** 2026-05-25
-- **Commit:** `c646311c83eae3bf4759c7ea39bfde2726ff11c9`
+- **Fecha:** 2026-06-25
 
 ---
 

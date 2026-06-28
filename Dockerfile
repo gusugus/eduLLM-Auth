@@ -1,11 +1,24 @@
 FROM amazoncorretto:17-alpine
+
+
+# Crear usuario no-root
+RUN addgroup -g 1001 -S nodegroup && \
+    adduser -S nodeuser -G nodegroup -u 1001
+
 WORKDIR /app
+
+# Cambiar propietario
+COPY --chown=nodeuser:nodegroup . .
+
+USER nodeuser
 
 # Copiar el JAR de la aplicación
 COPY ./target/autenticacionWeb-0.0.1-SNAPSHOT.jar app.jar
 
 # Descargar el agente OpenTelemetry (o copiarlo)
-ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+#ADD https://github.com/open-telemetry/opentelemetry-java-instrumentation/releases/latest/download/opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
+
+COPY ./opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
 
 #COPY ./opentelemetry-javaagent.jar /app/opentelemetry-javaagent.jar
 

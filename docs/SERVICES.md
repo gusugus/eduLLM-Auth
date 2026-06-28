@@ -24,7 +24,7 @@ El microservicio no contiene tareas programadas (cron jobs), colas de mensajerí
 * **Propósito:** Orquestar el flujo de recuperación y actualización de contraseñas.
 * **Detalle de Lógica:**
   - **Generación de Token (`createPasswordResetToken`):**
-    1. Verifica si el usuario existe en `comun.admin_usuario`.
+    1. Verifica si el usuario existe en `comun.tbl_m_usuario`.
     2. Genera un UUID v4 único y calcula el tiempo de expiración (por defecto 10 minutos).
     3. Registra el token y la fecha de expiración en base de datos.
     4. Invoca a `EmailService` para el envío del correo electrónico.

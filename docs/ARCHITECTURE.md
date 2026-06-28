@@ -89,7 +89,7 @@ Generación de un token temporal para iniciar el proceso de recuperación de con
 * **Datos de Salida:** `200 OK` con el texto `"Si el usuario existe, recibirás un correo con las instrucciones."`.
 * **Efectos Secundarios:** Envío de correo electrónico a través de SMTP de Gmail. Registro de logs de envío.
 * **Tablas de BD involucradas:**
-  - Lee y actualiza la tabla `comun.admin_usuario`.
+  - Lee y actualiza la tabla `comun.tbl_m_usuario`.
   - Campos actualizados: `reset_token` (almacena UUID aleatorio), `reset_token_expiry` (fecha actual + 10 minutos).
 
 ---
@@ -102,8 +102,8 @@ Ejecución del cambio de contraseña consumiendo el token temporal de recuperaci
 * **Datos de Salida:** `200 OK` con `"Contraseña restablecida exitosamente."` o `400 Bad Request` con `"Token inválido o expirado."`.
 * **Efectos Secundarios:** Registro en logs del éxito o fallo de la actualización de contraseña.
 * **Tablas de BD involucradas:**
-  - Lee de `comun.admin_usuario` para buscar el usuario por el token temporal y validar que la expiración sea posterior al momento actual.
-  - Actualiza la tabla `comun.admin_usuario`: setea el nuevo `password_hash` (encriptado con BCrypt), y limpia `reset_token` y `reset_token_expiry` (los setea a `NULL`).
+  - Lee de `comun.tbl_m_usuario` para buscar el usuario por el token temporal y validar que la expiración sea posterior al momento actual.
+  - Actualiza la tabla `comun.tbl_m_usuario`: setea el nuevo `password_hash` (encriptado con BCrypt), y limpia `reset_token` y `reset_token_expiry` (los setea a `NULL`).
 
 ---
 

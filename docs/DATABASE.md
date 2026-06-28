@@ -17,7 +17,7 @@ Este documento detalla el esquema de base de datos, funciones almacenadas y la i
 
 ## 📋 Listado de Tablas y Colecciones
 
-### Tabla: `comun.admin_usuario`
+### Tabla: `comun.tbl_m_usuario`
 
 * **Propósito:** Almacena los registros de usuarios del sistema, sus correos electrónicos para recuperación, contraseñas encriptadas y los datos temporales del flujo de restablecimiento de contraseña.
 * **Columnas:**
@@ -36,7 +36,7 @@ Este documento detalla el esquema de base de datos, funciones almacenadas y la i
 * **Ejemplo de Registro:**
 
 ```sql
-INSERT INTO comun.admin_usuario (username, correo, password_hash, reset_token, reset_token_expiry)
+INSERT INTO comun.tbl_m_usuario (username, correo, password_hash, reset_token, reset_token_expiry)
 VALUES (
   'profesor1', 
   'profesor1@edullm.edu', 

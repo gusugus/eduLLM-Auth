@@ -4,9 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import lombok.extern.slf4j.Slf4j;
 
 import dto.UsuarioLogin;
 
+@Slf4j
 @Repository
 public class UsuarioRepository {
 
@@ -31,6 +33,7 @@ public class UsuarioRepository {
                 return u;
             });
         } catch (EmptyResultDataAccessException e) {
+            log.debug("Error "+e.toString());
             return null;
         }
     }
