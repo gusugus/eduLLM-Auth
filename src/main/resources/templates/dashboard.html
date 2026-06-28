@@ -2,34 +2,34 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - EduLLM</title>
-    <style>
-        body { font-family: Arial; padding: 2rem; }
-        .container { max-width: 600px; margin: auto; }
-        button { padding: 8px 16px; margin-top: 1rem; cursor: pointer; }
-        pre { background: #f4f4f4; padding: 1rem; border-radius: 8px; overflow-x: auto; }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link th:href="@{/css/auth.css}" rel="stylesheet">
 </head>
-<body>
-<div class="container">
-    <h2>Bienvenido al Dashboard</h2>
-    <p>Has iniciado sesión correctamente.</p>
-    <h3>Token JWT (guardado en localStorage):</h3>
-    <pre id="tokenDisplay"></pre>
-    <button id="logoutBtn">Cerrar sesión</button>
+<body class="min-h-screen bg-gray-100 p-8">
+
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-xl shadow-md">
+    <h2 class="text-2xl font-bold text-gray-800 mb-1">Bienvenido al Dashboard</h2>
+    <p class="text-gray-500 mb-6">Has iniciado sesión correctamente.</p>
+
+    <div class="bg-blue-50 p-4 rounded-lg mb-6">
+        <h3 class="font-semibold text-gray-700 mb-3">Datos del usuario (desde el token)</h3>
+        <p class="text-sm text-gray-600 mb-1"><strong>ID Usuario:</strong> <span id="idUsuario">-</span></p>
+        <p class="text-sm text-gray-600 mb-1"><strong>Rol:</strong> <span id="rol">-</span></p>
+        <p class="text-sm text-gray-600"><strong>Nombre de usuario:</strong> <span id="username">-</span></p>
+    </div>
+
+    <h3 class="font-semibold text-gray-700 mb-2">Token JWT (guardado en localStorage):</h3>
+    <pre id="tokenDisplay" class="bg-gray-100 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap break-words text-xs mb-3"></pre>
+    <pre id="payloadDisplay" class="bg-gray-200 p-4 rounded-lg overflow-x-auto whitespace-pre-wrap break-words text-xs mb-6"></pre>
+
+    <button id="logoutBtn"
+            class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 cursor-pointer">
+        Cerrar sesión
+    </button>
 </div>
 
-<script>
-    const token = localStorage.getItem('jwtToken');
-    if (!token) {
-        window.location.href = '/login';
-    }
-    document.getElementById('tokenDisplay').innerText = token;
-
-    document.getElementById('logoutBtn').addEventListener('click', () => {
-        localStorage.removeItem('jwtToken');
-        window.location.href = '/login';
-    });
-</script>
+<script th:src="@{/js/dashboard.js}"></script>
 </body>
 </html>

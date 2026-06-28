@@ -22,7 +22,13 @@ public class SimpleCorsFilter implements Filter {
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain) throws IOException, ServletException {
         HttpServletResponse response = (HttpServletResponse) res;
         HttpServletRequest request = (HttpServletRequest) req;
-        response.setHeader("Access-Control-Allow-Origin", "*");
+        String origin = request.getHeader("Origin");
+        if (origin != null && (origin.equals("http://localhost:8085") || origin.equals("http://localhost:8080")
+                || origin.equals("http://localhost:8089") || origin.equals("http://localhost:8001")
+                || origin.equals("http://localhost:8002") || origin.equals("http://localhost:8003")
+                || origin.equals("http://gateway-ms"))) {
+            response.setHeader("Access-Control-Allow-Origin", origin);
+        }
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with, authorization, content-type");

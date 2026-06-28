@@ -21,7 +21,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
     	response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN); // o 401
+        response.setStatus(HttpServletResponse.SC_FORBIDDEN); // 403
         Map<String, String> error = new HashMap<>();
         error.put("message", "Credenciales inválidas");
         error.put("error", authException.getMessage());

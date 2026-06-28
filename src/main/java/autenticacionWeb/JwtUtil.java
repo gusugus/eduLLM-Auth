@@ -23,52 +23,75 @@ public class JwtUtil {
     @Value("${jwt.expiration}")
     private Long expiration;
 
-    // Obtener la clave de firma (SecretKey para HS256)
+    /**
+     * Obtener la clave de firma (SecretKey para HS256)
+     * @return key secret
+     */
     private SecretKey getSignKey() {
         // Si el secret está en Base64, decodifícalo; si es texto plano, usa getBytes()
         byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // Extraer el username (subject) del token
+    /**
+     * Extraer el username (subject) del token
+     * @param token
+     * @return Username
+     */
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 
-    // Extraer la fecha de expiración
+    /**
+     * Extraer la fecha de expiración
+     * @param token Token
+     * @return Fecha de expiracion
+     */
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
-    // Extraer un claim específico
+    // 
+    /**
+     * Extraer un claim específico
+     * @param <T>
+     * @param token
+     * @param claimsResolver
+     * @return
+     */
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = extractAllClaims(token);
         return claimsResolver.apply(claims);
     }
 
-    // Validar token contra UserDetails
+    /**
+     * Validar token contra UserDetails
+     * @param token
+     * @param userDetails
+     * @return
+     */
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractUsername(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 
-    // Verificar si el token ha expirado
+    /**
+     * Verificar si el token ha expirado
+     * @param token
+     * @return true si el token ha exxpirado
+     */
     private Boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 
-    // Generar token solo con username
-    public String generateToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername());
-    }
 
-    // Generar token con claims adicionales (userId, rol, etc.)
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return createToken(extraClaims, userDetails.getUsername());
-    }
 
-    // Construir y firmar el token (API moderna)
+    /**
+     * Funcion para construir y firmar el token (API moderna)
+     * @param claims Datos Verificados
+     * @param subject Username
+     * @return token
+     */
     private String createToken(Map<String, Object> claims, String subject) {
         return Jwts.builder()
                 .claims(claims)                     // Claims adicionales
@@ -79,11 +102,11 @@ public class JwtUtil {
                 .compact();
     }
     
-    public String generateToken(UserDetails userDetails, Map<String, Object> extraClaims) {
-        return createToken(extraClaims, userDetails.getUsername());
-    }
-
-    // Extraer todos los claims del token (API moderna)
+    /**
+     * Extraer todos los claims del token (API moderna)
+     * @param token
+     * @return Datos Validados
+     */
     private Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .verifyWith(getSignKey())           // Verificar con la misma clave
@@ -91,4 +114,24 @@ public class JwtUtil {
                 .parseSignedClaims(token)           // parseSignedClaims en lugar de parseClaimsJws
                 .getPayload();                      // getPayload en lugar de getBody
     }
+
+    /**
+     * Genera token
+     * @param username Usuario 
+     * @param idUsuario idUsuario
+     * @param rol NomreRol
+     * @return
+     */
+    public String generateToken(String username, int idUsuario, String rol) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("idUsuario", idUsuario);
+        claims.put("rol", rol);
+        return createToken(claims, username);
+    }
+
+    public Long extractIdUsuario(String token) {
+        return extractAllClaims(token).get("idUsuario", Long.class);
+    }
+
+    
 }

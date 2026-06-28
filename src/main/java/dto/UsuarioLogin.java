@@ -8,6 +8,7 @@ public class UsuarioLogin {
  private String username;        // <-- Agregar esto
  private String passwordHash;
  private Integer idRol;
+ private String nombreRol;
  private String primerNombre;
  private String apellidoPaterno;
  private String apellidoMaterno;

@@ -8,6 +8,16 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class ViewController {
 	
+    @GetMapping("/")
+    public String landingPage() {
+        return "inicio";
+    }
+
+    @GetMapping("/inicio")
+    public String inicioPage() {
+        return "inicio";
+    }
+
     @GetMapping("/login")
     public String loginPage() {
         return "login";   // busca login.html en templates
@@ -25,8 +35,4 @@ public class ViewController {
         return modelAndView;
     }
     
-    @GetMapping("/dashboard")
-    public String dashboard() {
-        return "dashboard";
-    }
 }
