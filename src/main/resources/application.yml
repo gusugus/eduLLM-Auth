@@ -4,9 +4,10 @@ jwt:
 app:
   reset-token-expiration-minutes: 10
   base-url: localhost
-  protocol: http:///
+  protocol: http://
   port: 8081
   gateway-url: http://localhost:8085
+  email-templates-path: config/email-templates
 spring:
   http:
     encoding:

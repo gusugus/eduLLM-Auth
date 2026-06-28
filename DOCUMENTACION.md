@@ -31,7 +31,10 @@
 ```
 autenticacionWeb/
 ├── config/
-│   └── application.yml              ← Config externa (usada por Docker)
+│   ├── application.yml              ← Config externa (usada por Docker)
+│   └── email-templates/             ← Templates HTML para correos
+│       ├── reset-password-email.html
+│       └── new-credentials-email.html
 ├── src/
 │   └── main/
 │       ├── java/
@@ -173,6 +176,8 @@ Docker monta `./config/application.yml` en `/app/config/application.yml`, que so
 | `spring.datasource.username` | `admin` | Usuario DB |
 | `spring.datasource.password` | `admin` | Password DB. **Cambiar en producción.** |
 | `spring.jpa.hibernate.ddl-auto` | `none` | No modifica el esquema DB |
+| `app.email-templates-path` | `config/email-templates` | Ruta a templates HTML de correos |
+| `app.reset-token-expiration-minutes` | `10` | Minutos de validez del reset token |
 | `logging.file.name` | `logs/auth.log` | Archivo de log rotativo |
 
 ---
@@ -258,6 +263,7 @@ final String jwt = jwtUtil.generateToken(userDetails, claims);
 | `jjwt-api` | compile | API de JJWT para firmar/parsear tokens |
 | `jjwt-impl` | runtime | Implementación JJWT |
 | `jjwt-jackson` | runtime | Serialización JSON de claims JWT |
+| `spring-boot-starter-mail` | compile | Envío de correos SMTP con MimeMessage |
 | `lombok` | optional | Generación de getters/setters via `@Data` |
 | `spring-boot-devtools` | compile | Hot reload en desarrollo |
 
@@ -284,6 +290,13 @@ AuthController.createAuthenticationToken()
   │           │           └─ PostgreSQL: SELECT * FROM comun.fn_login(?)
   │           │
   │           └─ BCryptPasswordEncoder.matches(rawPassword, hash)
+  │
+  ├─ ¿reset_token activo?
+  │     │
+  │     ├─ Sí → { mustChangePassword: true, resetToken: "uuid" }
+  │     │       (no se genera JWT, se redirige a /reset-password)
+  │     │
+  │     └─ No → continúa:
   │
   ├─ JwtUtil.generateToken(userDetails)
   │     └─ HMAC-SHA256 firmado, expira en 24h

@@ -2,6 +2,7 @@
 package controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +20,13 @@ import autenticacionWeb.JwtUtil;
 import dto.AuthenticationRequest;
 import dto.AuthenticationResponse;
 import dto.ForgotPasswordRequest;
+import dto.RecreateCredentialsRequest;
 import dto.ResetPasswordRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import services.CustomUserDetails;
 import services.PasswordResetService;
+import services.PasswordValidator;
 
 @Slf4j
 @RestController
@@ -59,6 +62,17 @@ public class AuthController {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+
+            // Verificar si debe cambiar la contraseña (primer ingreso)
+            String activeToken = passwordResetService.getActiveResetToken(userDetails.getUsername());
+            if (activeToken != null) {
+                Map<String, Object> mustChange = new HashMap<>();
+                mustChange.put("mustChangePassword", true);
+                mustChange.put("resetToken", activeToken);
+                mustChange.put("message", "Debes cambiar tu contraseña antes de continuar.");
+                return ResponseEntity.ok(mustChange);
+            }
+
             String jwt = jwtUtil.generateToken(
                 userDetails.getUsername(),
                 userDetails.getIdUsuario(),
@@ -78,8 +92,9 @@ public class AuthController {
 
             // 🔥 IMPORTANTE: Redirigir al gateway, no al frontend directamente
             Map<String, Object> responseBody = new HashMap<>();
-            //responseBody.put("token", jwt);
-            // Devolver la URL de redirección al gateway
+            responseBody.put("token", jwt);
+            responseBody.put("idUsuario", userDetails.getIdUsuario());
+            responseBody.put("rol", userDetails.getRol());
             responseBody.put("redirectUrl", gatewayUrl + "/login-success");
             
             log.info("Login exitoso para usuario: {}", userDetails.getUsername());
@@ -107,13 +122,42 @@ public class AuthController {
     
     @PostMapping("/forgot-password")
     public ResponseEntity<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
-        passwordResetService.createPasswordResetToken(request.getUsername());
-        return ResponseEntity.ok("Si el usuario existe, recibirás un correo con las instrucciones.");
+        boolean found = passwordResetService.createPasswordResetToken(request.getUsername());
+        if (found) {
+            return ResponseEntity.ok("Correo de recuperación enviado. Revisa tu bandeja de entrada.");
+        } else {
+            return ResponseEntity.status(404).body("Usuario no encontrado.");
+        }
+    }
+
+    @PostMapping("/recreate-credentials")
+    public ResponseEntity<?> recreateCredentials(@RequestBody RecreateCredentialsRequest request) {
+        String result = passwordResetService.recreateCredentials(request.getUsername());
+        if (result != null) {
+            return ResponseEntity.ok(Map.of("message", "Credenciales actualizadas. Revisa tu correo electrónico."));
+        } else {
+            return ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado"));
+        }
+    }
+
+    @GetMapping("/verify-reset-token")
+    public ResponseEntity<?> verifyResetToken(@RequestParam("token") String token) {
+        boolean valid = passwordResetService.verifyToken(token);
+        Map<String, Object> response = new HashMap<>();
+        response.put("valid", valid);
+        if (!valid) {
+            response.put("message", "El enlace ha expirado. Solicita un nuevo restablecimiento.");
+        }
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
-        boolean isReset = passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
+        List<String> errors = PasswordValidator.validate(request.getNewPassword());
+        if (!errors.isEmpty()) {
+            return ResponseEntity.badRequest().body(String.join(" ", errors));
+        }
+        boolean isReset = passwordResetService.resetPassword(request.+getToken(), request.getNewPassword());
         if (isReset) {
             return ResponseEntity.ok("Contraseña restablecida exitosamente.");
         } else {

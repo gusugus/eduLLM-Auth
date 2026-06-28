@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/", "/inicio", "/login", "/forgot-password", "/reset-password", "/dashboard",
                                  "/api/auth/login", "/api/auth/forgot-password", "/api/auth/reset-password",
+                                 "/api/auth/verify-reset-token", "/api/auth/recreate-credentials",
                                  "/css/**", "/api/auth/verify",  "/js/**").permitAll()
                 .anyRequest().authenticated()	
             )
