@@ -7,6 +7,7 @@ app:
   protocol: http://
   port: 8081
   gateway-url: http://localhost:8085
+  redirect-delay: 2000
   email-templates-path: config/email-templates
 spring:
   http:
