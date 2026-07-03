@@ -32,7 +32,7 @@ loginForm.addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (response.ok) {
-            const delay = data.redirectDelay || 5500;
+            const delay = data.redirectDelay || 2500;
 
             if (data.mustChangePassword) {
                 messageDiv.textContent = 'Debes cambiar tu contraseña. Redirigiendo...';

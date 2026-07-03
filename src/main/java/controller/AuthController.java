@@ -134,7 +134,6 @@ public class AuthController {
         }
     }
 
-
     @PostMapping("/recreate-credentials")
     public ResponseEntity<?> recreateCredentials(@RequestBody RecreateCredentialsRequest request) {
         String result = passwordResetService.recreateCredentials(request.getUsername());
