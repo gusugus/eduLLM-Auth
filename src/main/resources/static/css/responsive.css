@@ -1,0 +1,69 @@
+/* Styles for responsive mobile and tablet design for inicio.html */
+
+@media (max-width: 1023px) {
+
+    /* Allow scrolling and auto height on body */
+    .landing-body {
+        height: auto !important;
+        min-height: 100vh !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+    }
+
+    /* Stack columns vertically and remove full-height restriction */
+    .landing-container {
+        height: auto !important;
+        min-height: 100vh !important;
+        flex-direction: column !important;
+    }
+
+    /* Left column full width and adjusted padding/spacing */
+    .left-column {
+        width: 100% !important;
+        padding-left: 1.5rem !important;
+        /* px-6 equivalent */
+        padding-right: 1.5rem !important;
+        padding-top: 3.5rem !important;
+        padding-bottom: 3.5rem !important;
+        justify-content: flex-start !important;
+    }
+
+    /* Smaller spacing for elements inside left column on mobile */
+    .left-column .logo-container {
+        margin-bottom: 2rem !important;
+    }
+
+    .left-column h1 {
+        font-size: 2rem !important;
+        /* text-3xl equivalent */
+        line-height: 2.5rem !important;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .left-column p {
+        margin-bottom: 1.5rem !important;
+        font-size: 0.875rem !important;
+        /* text-sm */
+        max-w: 100% !important;
+    }
+
+    .left-column ul {
+        margin-bottom: 2.25rem !important;
+    }
+
+    /* Right column full width and nice minimum height */
+    .right-column {
+        width: 100% !important;
+        min-height: 600px !important;
+        padding-top: 4rem !important;
+        padding-bottom: 4rem !important;
+        gap: 3rem !important;
+        justify-content: center !important;
+    }
+
+    /* Adjust SVG illustration sizes inside right column on mobile */
+    .right-column svg {
+        max-width: 280px !important;
+        width: 70% !important;
+    }
+}

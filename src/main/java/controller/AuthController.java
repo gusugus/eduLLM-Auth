@@ -50,6 +50,9 @@ public class AuthController {
 
     @Value("${app.gateway-url}")
     String gatewayUrl;
+
+    @Value("${app.redirect-delay}")
+    private int redirectDelay;
     
     @PostMapping("/login")
     public ResponseEntity<?> createAuthenticationToken(
@@ -95,7 +98,8 @@ public class AuthController {
             responseBody.put("token", jwt);
             responseBody.put("idUsuario", userDetails.getIdUsuario());
             responseBody.put("rol", userDetails.getRol());
-            responseBody.put("redirectUrl", gatewayUrl + "/login-success");
+            responseBody.put("redirectUrl", "/login-success");
+            responseBody.put("redirectDelay", redirectDelay);
             
             log.info("Login exitoso para usuario: {}", userDetails.getUsername());
             return ResponseEntity.ok(responseBody);
@@ -157,7 +161,7 @@ public class AuthController {
         if (!errors.isEmpty()) {
             return ResponseEntity.badRequest().body(String.join(" ", errors));
         }
-        boolean isReset = passwordResetService.resetPassword(request.+getToken(), request.getNewPassword());
+        boolean isReset = passwordResetService.resetPassword(request.getToken(), request.getNewPassword());
         if (isReset) {
             return ResponseEntity.ok("Contraseña restablecida exitosamente.");
         } else {

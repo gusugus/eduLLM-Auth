@@ -32,12 +32,14 @@ loginForm.addEventListener('submit', async (e) => {
         const data = await response.json();
 
         if (response.ok) {
+            const delay = data.redirectDelay || 2500;
+
             if (data.mustChangePassword) {
                 messageDiv.textContent = 'Debes cambiar tu contraseña. Redirigiendo...';
                 messageDiv.classList.add('success');
                 setTimeout(() => {
                     window.location.href = '/reset-password?token=' + encodeURIComponent(data.resetToken);
-                }, 5500);
+                }, delay);
                 return;
             }
 
@@ -46,7 +48,7 @@ loginForm.addEventListener('submit', async (e) => {
 
             setTimeout(() => {
                 window.location.href = data.redirectUrl;
-            }, 5500);
+            }, delay);
         } else {
             const errorMsg = data.error || data.message || 'Credenciales inválidas';
             messageDiv.textContent = errorMsg;
